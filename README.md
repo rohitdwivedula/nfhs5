@@ -1,0 +1,3 @@
+# Downloading district-wise data
+
+District wise data is available at [this link](http://rchiips.org/nfhs/districtfactsheet_NFHS-5.shtml) ([web archive link](http://web.archive.org/web/20211213200517/http://rchiips.org/nfhs/districtfactsheet_NFHS-5.shtml)). From this webpage, we get the links to each of the statewise pages, which is saved in the `statewise_links.csv` file. Then the `get_districtwise_links.py` script is used to compile the list of all district wise files into `districtwise_links.csv` - during this process, it appears that the webpages for one state ([Telangana](http://rchiips.org/nfhs/NFHS-5_TL.shtml)) and one Union Territory ([Chandigarh](http://rchiips.org/nfhs/NFHS-5_CH.shtml)), currently point to a `404` page.
