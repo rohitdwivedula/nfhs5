@@ -8,8 +8,8 @@ for index, row in links.iterrows():
     print(f"Downloading {row['district']} or {row['state']}")
     url = "http://rchiips.org/nfhs/" + row['link']
     r = requests.get(url, allow_redirects=True)
-    statename = row['state'].lower().replace(' ', '_').replace('(','').replace(')','')
-    districtname = row['district'].lower().replace(' ', '_').replace('(','').replace(')','')
-    os.makedirs(f"reports/{statename}", exist_ok=True)
-    with open(os.path.join(f"reports/{statename}", districtname), 'wb') as f:
+    statename = row['state'].lower().replace('&', '').replace(' ', '_').replace('(','').replace(')','')
+    districtname = row['district'].lower().replace('&', '').replace(' ', '_').replace('(','').replace(')','')
+    os.makedirs(f"data/{statename}", exist_ok=True)
+    with open(os.path.join(f"data/{statename}", districtname), 'wb') as f:
         f.write(r.content)
