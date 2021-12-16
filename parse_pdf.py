@@ -5,6 +5,7 @@ import math
 import pandas as pd
 import os
 import re
+import sys
 import time
 
 from pdfminer.high_level import extract_pages
@@ -134,11 +135,18 @@ def process_file(filepath, savepath):
     print(f"[END] Saved JSON to {savepath}")
     print(f"[TIME] {round(end-start, 2)}")
 
-
+i = 0
 for root, dirs, files in os.walk(os.path.abspath("districtwise_data/pdfs")):
     for file in files:
         pdf_file_location = os.path.join(root, file)
         save_location = pdf_file_location.replace("/pdfs/", "/json/").replace('.pdf', '') + '.json'
         os.makedirs(os.path.dirname(save_location), exist_ok=True)
         if not os.path.exists(save_location):
-            process_file(pdf_file_location, save_location)
+            try:
+                process_file(pdf_file_location, save_location)
+            except Exception as e:
+                print(e)
+        else:
+            print(f"FILE {save_location} already exists. Skipping...")
+        print(f"Done processing file #{i}\n")
+        sys.stdout.flush()
