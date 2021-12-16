@@ -12,7 +12,7 @@ from pdfminer.high_level import extract_pages
 import tabula
 
 def process_file(filepath, savepath):
-    print(f"[START] Processing district {file} at {filepath}")
+    print(f"[START] Processing district at {filepath}")
     start = time.time()
 
     data = extract_pages(filepath)
@@ -113,7 +113,7 @@ def process_file(filepath, savepath):
     full_table = full_table[~full_table['temp']]
     full_table = full_table[["Indicator", "NFHS5", "num_cases"]].reset_index(drop=True)
     full_table['IndicatorNumber'] = full_table['Indicator'].apply(lambda x: int(x.split('.')[0]))
-    full_table['Indicator'] = full_table['Indicator'].apply(lambda x: (x.split('.')[1]))
+    full_table['Indicator'] = full_table['Indicator'].apply(lambda x: '.'.join(x.split('.')[1:]))
     full_table = full_table[['IndicatorNumber', 'Indicator', 'NFHS5', 'num_cases']]
     
     values_dict = dict()
@@ -144,9 +144,11 @@ for root, dirs, files in os.walk(os.path.abspath("districtwise_data/pdfs")):
         if not os.path.exists(save_location):
             try:
                 process_file(pdf_file_location, save_location)
+                print(f"[DONE {i}] Processing file\n")
             except Exception as e:
-                print(e)
+                print(f"[FAILED {i}] Fatal error in function: \n")
         else:
-            print(f"FILE {save_location} already exists. Skipping...")
-        print(f"Done processing file #{i}\n")
+            print(f"[SKIPPED {i}] FILE {save_location} already exists. Skipping...")
+            
         sys.stdout.flush()
+        i += 1
