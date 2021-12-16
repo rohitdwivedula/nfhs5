@@ -1,9 +1,0 @@
-Downloading Anantapur or Andhra Pradesh
-Traceback (most recent call last):
-  File "download_all_districts.py", line 14, in <module>
-    with open(os.path.join(f"data/{statename}", districtname), 'wb') as f:
-FileNotFoundError: [Errno 2] No such file or directory: 'data/andhra_pradesh/anantapur'
-Traceback (most recent call last):
-  File "parse_pdf.py", line 136, in <module>
-    process_file(file_location, save_location)
-NameError: name 'file_location' is not defined

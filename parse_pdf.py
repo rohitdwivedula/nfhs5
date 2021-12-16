@@ -5,12 +5,15 @@ import math
 import pandas as pd
 import os
 import re
+import time
 
 from pdfminer.high_level import extract_pages
 import tabula
 
 def process_file(filepath, savepath):
-    print(f"[START] Processing district {file} at {file_location}")
+    print(f"[START] Processing district {file} at {filepath}")
+    start = time.time()
+
     data = extract_pages(filepath)
     data = list(map(lambda x: list(x), data))
     assert len(data) == 6, "Files must have 6 pages exactly - not more, not less."
@@ -126,11 +129,16 @@ def process_file(filepath, savepath):
     assert not os.path.exists(savepath), "This program shall not overwrite files."
     with open(savepath, 'w') as f:
         json.dump(ALL_INFO, f)
+    
+    end = time.time()
     print(f"[END] Saved JSON to {savepath}")
+    print(f"[TIME] {round(end-start, 2)}")
+
 
 for root, dirs, files in os.walk(os.path.abspath("districtwise_data/pdfs")):
     for file in files:
         pdf_file_location = os.path.join(root, file)
         save_location = pdf_file_location.replace("/pdfs/", "/json/").replace('.pdf', '') + '.json'
         os.makedirs(os.path.dirname(save_location), exist_ok=True)
-        process_file(pdf_file_location, save_location)
+        if not os.path.exists(save_location):
+            process_file(pdf_file_location, save_location)
