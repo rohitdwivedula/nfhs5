@@ -9,7 +9,7 @@ import re
 from pdfminer.high_level import extract_pages
 import tabula
 
-def process_file(filepath):
+def process_file(filepath, savepath):
     print(f"[START] Processing district {file} at {file_location}")
     data = extract_pages(filepath)
     data = list(map(lambda x: list(x), data))
@@ -123,13 +123,14 @@ def process_file(filepath):
     
     ALL_INFO['indicators'] = values_dict
     
-    filepath_to_save = f'{filepath}.json'
-    assert not os.path.exists(filepath_to_save), "This program shall not overwrite files."
-    with open(filepath_to_save, 'w') as f:
+    assert not os.path.exists(savepath), "This program shall not overwrite files."
+    with open(savepath, 'w') as f:
         json.dump(ALL_INFO, f)
-    print(f"[END] Saved JSON to {filepath_to_save}")
+    print(f"[END] Saved JSON to {savepath}")
 
-for root, dirs, files in os.walk(os.path.abspath("data")):
+for root, dirs, files in os.walk(os.path.abspath("districtwise_data/pdfs")):
     for file in files:
-        file_location = os.path.join(root, file)
-        process_file(file_location)
+        pdf_file_location = os.path.join(root, file)
+        save_location = pdf_file_location.replace("/pdfs/", "/json/").replace('.pdf', '') + '.json'
+        os.makedirs(os.path.dirname(save_location), exist_ok=True)
+        process_file(pdf_file_location, save_location)
