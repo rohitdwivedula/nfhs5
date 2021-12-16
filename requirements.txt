@@ -1,0 +1,8 @@
+beautifulsoup4==4.10.0
+datefinder==0.7.1
+pandas==1.0.5
+pdfminer==20191125
+pdfminer.six==20211012
+requests==2.22.0
+tabula==1.0.5
+tabula_py==2.3.0
