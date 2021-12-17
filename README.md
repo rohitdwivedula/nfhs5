@@ -1,4 +1,4 @@
-For now, we attempt to download only district-wise data, which has 104 indicators. NFHS also provides state-wise data too, which contain statistics for a few more indicators.
+For now, we attempt to download only district-wise data, which has 104 indicators. NFHS also provides state-wise data too, which contain statistics for a few more indicators. All *code* in this repository is released under the MIT License. 
 
 ## Downloading district-wise data
 
