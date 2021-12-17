@@ -6,7 +6,7 @@ One small problem, however, is that all the reports are provided as `PDFs`, whic
 
 **Note: I tried my best to make sure the data is being parsed correctly, but there is a possibility that some data in JSON might not be 100% accurate - there is no way I could have manually verified all 704 PDF files and their outputs, so I randomly sampled and verify a couple of files, all of which looked okay.** If you want to replicate the data parsing from PDFs, feel free to go through the `*.py` files.
 
-All *code* in this repository is released under the MIT License. 
+All *code* in this repository is released under the MIT License. The data (JSON, PDFs) are available as a [Kaggle Dataset](https://www.kaggle.com/rohitdwivedula/national-family-health-survey-5-india)
 
 ## Downloading district-wise data
 
