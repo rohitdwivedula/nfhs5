@@ -17,7 +17,14 @@ def process_file(filepath, savepath):
 
     data = extract_pages(filepath)
     data = list(map(lambda x: list(x), data))
-    assert len(data) == 6, "Files must have 6 pages exactly - not more, not less."
+    
+    if "maharashtra/raigarh" in filepath:
+        print("It is known that the raigarh file has 7 pages instead of 6 (due to an extra blank page)")
+    elif "west_bengal/jalpaiguri" in filepath:
+        print("It is known that the jalpaiguri file has 7 pages instead of 6 (due to an extra blank page)")
+    else:
+        assert len(data) == 6, "Files must have 6 pages exactly - not more, not less."
+
     ALL_INFO = dict() # all information stored here
     
     '''
@@ -31,7 +38,7 @@ def process_file(filepath, savepath):
     '''
     
     # Process Page 1: this just contains some introductory text, so we just extract all the text.
-    extracted_texts = list(map(lambda x: x.get_text().replace('\n', ''), data[1])) # get text, remove new lines
+    extracted_texts = list(map(lambda x: x.get_text().replace('\n', '') if "Text" in str(type(x)) else "", data[1])) # get text, remove new lines
     intro = functools.reduce(lambda a, b: a+b, extracted_texts).strip()
     intro = re.sub('\s+',' ', intro)
 
@@ -56,7 +63,42 @@ def process_file(filepath, savepath):
         ALL_INFO['n_women'] = women
         ALL_INFO['n_men'] = men
     
-    tables = tabula.read_pdf(filepath, pages=[3, 4, 5], stream=True)
+    if "rajasthan" in filepath:
+        tables = tabula.read_pdf_with_template(
+            filepath, 
+            "tabula_templates/rajasthan_template.tabula-template.json",
+            pages=[3, 4, 5], stream=True
+        )
+    elif "madhya_pradesh" in filepath:
+        tables = tabula.read_pdf_with_template(
+            filepath, 
+            "tabula_templates/madhya_pradesh_template.tabula-template.json",
+            pages=[3, 4, 5], stream=True
+        )
+    elif "himachal_pradesh" in filepath:
+        tables = tabula.read_pdf_with_template(
+            filepath, 
+            "tabula_templates/himachal_pradesh_template.tabula-template.json",
+            pages=[3, 4, 5], stream=True
+        )
+    elif "nct_of_delhi_ut" in filepath:
+        tables = tabula.read_pdf_with_template(
+            filepath, 
+            "tabula_templates/nct_template.tabula-template.json",
+            pages=[3, 4, 5], stream=True
+        )
+    elif "west_bengal/jalpaiguri" in filepath:
+        print("Pages [3, 4, 6] contain tables in west_bengal/jalpaiguri instead of [3, 4, 5]")
+        tables = tabula.read_pdf(filepath, pages=[3, 4, 6], stream=True)
+    elif "maharashtra/raigarh" in filepath: 
+        tables = tabula.read_pdf_with_template(
+            filepath, 
+            "tabula_templates/raigarh_template.tabula-template.json",
+            pages=[3, 4, 5], stream=True
+        )
+    else:
+        tables = tabula.read_pdf(filepath, pages=[3, 4, 5], stream=True)
+
     assert len(tables) == 3
 
     table_rows = list(map(lambda x: x.shape[0], tables))
@@ -76,7 +118,7 @@ def process_file(filepath, savepath):
     full_table = full_table.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     full_table = full_table[full_table['Indicator'] != 'Indicators'].reset_index(drop=True)
     full_table = full_table[full_table['NFHS5'] != 'Total'].reset_index(drop=True)
-    full_table["Indicator"] = full_table["Indicator"].apply(lambda x: x.strip())
+    full_table["Indicator"] = full_table["Indicator"].apply(lambda x: x.strip() if isinstance(x, str) else x)
 
     all_headings = pd.read_csv("headings.csv", sep="#")
     all_headings = all_headings["Headings"].apply(lambda x: x.strip()) 
@@ -102,9 +144,17 @@ def process_file(filepath, savepath):
             return float(x)
 
     full_table['num_cases'] = full_table['NFHS5'].apply(num_cases)
+    
+    if 'gujarat/kheda' in filepath: # special exception for this
+        full_table = full_table[~full_table['NFHS5'].apply(lambda x: x == '(2019-' if type(x) == str else False)]
+
     full_table['NFHS5'] = full_table['NFHS5'].apply(process)
 
-    full_table["temp"] = full_table["Indicator"].apply(lambda x: not x.split('.')[0].strip().isdigit())
+    full_table["temp"] = full_table["Indicator"].apply(lambda x: not str(x).split('.')[0].strip().isdigit())
+
+    if "maharashtra/raigarh" in filepath: # exception
+        full_table.loc[101, 'NFHS5'] = full_table.loc[102, 'NFHS5']
+        full_table = full_table.drop(labels=[102], axis=0).reset_index(drop=True)
 
     for index, row in full_table[full_table['temp']].iterrows():
         full_table.loc[index-1, 'NFHS5'] = row['NFHS5']
@@ -146,7 +196,7 @@ for root, dirs, files in os.walk(os.path.abspath("districtwise_data/pdfs")):
                 process_file(pdf_file_location, save_location)
                 print(f"[DONE {i}] Processing file\n")
             except Exception as e:
-                print(f"[FAILED {i}] Fatal error in function: \n")
+                print(f"[FAILED {i}] Fatal error in function: \n", e)
         else:
             print(f"[SKIPPED {i}] FILE {save_location} already exists. Skipping...")
             
