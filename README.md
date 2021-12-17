@@ -1,4 +1,12 @@
-For now, we attempt to download only district-wise data, which has 104 indicators. NFHS also provides state-wise data too, which contain statistics for a few more indicators. All *code* in this repository is released under the MIT License. 
+# Parsing NFHS-5 
+
+The National Family & Health Survey (NFHS) is a survey in India that attempts to collect information on health conditions, nutrition, family planning, domestic violence, and a host of other factors through conducting surveys on a random ("representative") sample of Indian households in all states. The fifth NFHS was conducted through 2019-21, and the reports were released to the public in 2021 and can be found at [this link](http://rchiips.org/nfhs/nfhs5.shtml). 
+
+One small problem, however, is that all the reports are provided as `PDFs`, which are pretty neat for humans to read, but terrible for humans to parse. This repo contains scripts that will download all the district wise reports (704 of them), and extract data from the tables, and convert it into machine-friendly `JSON`. NFHS provides district-wise, state-wise and entire country (aggregate) reports. This repo currently contains code to download, parse and generate `JSONs` for district-wise reports only. Districtwise reports contain information on 104 "indicators" (or questions asked in the survey). Statewise reports seem to contain some extra information that is not reported district wise, and has approximately 130+ indicators.
+
+**Note: I tried my best to make sure the data is being parsed correctly, but there is a possibility that some data in JSON might not be 100% accurate - there is no way I could have manually verified all 704 PDF files and their outputs, so I randomly sampled and verify a couple of files, all of which looked okay.** If you want to replicate the data parsing from PDFs, feel free to go through the `*.py` files.
+
+All *code* in this repository is released under the MIT License. 
 
 ## Downloading district-wise data
 
